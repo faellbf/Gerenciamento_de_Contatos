@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciamento de Contatos</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="text"], input[type="tel"], input[type="email"], button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gerenciamento de Contatos</h1>
+    
+    <!-- Formulário para adicionar/editar contato -->
+    <form id="contactForm">
+      <h2>Adicionar/Editar Contato</h2>
+      <input type="text" id="name" placeholder="Nome" required>
+      <input type="tel" id="phone" placeholder="Telefone" required>
+      <input type="email" id="email" placeholder="E-mail" required>
+      <button type="submit" id="submitBtn">Salvar Contato</button>
+      <button type="button" id="cancelBtn" style="display: none;">Cancelar</button>
+      <input type="hidden" id="contactId">
+    </form>
+
+    <!-- Lista de contatos -->
+    <div id="contactsList">
+      <h2>Lista de Contatos</h2>
+      <ul id="contacts"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Dados simulados de contatos (poderiam ser carregados de um servidor)
+let contacts = [];
+
+// Seleciona elementos do DOM
+const contactForm = document.getElementById('contactForm');
+const contactsList = document.getElementById('contacts');
+const nameInput = document.getElementById('name');
+const phoneInput = document.getElementById('phone');
+const emailInput = document.getElementById('email');
+const submitBtn = document.getElementById('submitBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const contactIdInput = document.getElementById('contactId');
+
+// Função para exibir os contatos na lista
+function displayContacts() {
+  contactsList.innerHTML = '';
+  contacts.forEach((contact, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${contact.name}</strong> - ${contact.phone} | ${contact.email}
+                    <button onclick="editContact(${index})">Editar</button>
+                    <button onclick="deleteContact(${index})">Excluir</button>`;
+    contactsList.appendChild(li);
+  });
+}
+
+// Função para adicionar ou editar um contato
+function addOrEditContact(event) {
+  event.preventDefault();
+
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+  const email = emailInput.value.trim();
+  const contactId = contactIdInput.value;
+
+  if (!name || !phone || !email) {
+    alert('Por favor, preencha todos os campos.');
+    return;
+  }
+
+  if (contactId) {
+    // Editar contato existente
+    const index = parseInt(contactId);
+    contacts[index] = { name, phone, email };
+    contactIdInput.value = '';
+  } else {
+    // Adicionar novo contato
+    contacts.push({ name, phone, email });
+  }
+
+  // Limpa o formulário e exibe os contatos atualizados
+  nameInput.value = '';
+  phoneInput.value = '';
+  emailInput.value = '';
+  displayContacts();
+}
+
+// Função para editar um contato
+function editContact(index) {
+  const contact = contacts[index];
+  nameInput.value = contact.name;
+  phoneInput.value = contact.phone;
+  emailInput.value = contact.email;
+  contactIdInput.value = index;
+  submitBtn.textContent = 'Salvar Edição';
+  cancelBtn.style.display = 'inline';
+}
+
+// Função para cancelar a edição de um contato
+function cancelEdit() {
+  nameInput.value = '';
+  phoneInput.value = '';
+  emailInput.value = '';
+  contactIdInput.value = '';
+  submitBtn.textContent = 'Salvar Contato';
+  cancelBtn.style.display = 'none';
+}
+
+// Função para excluir um contato
+function deleteContact(index) {
+  if (confirm('Tem certeza que deseja excluir este contato?')) {
+    contacts.splice(index, 1);
+    displayContacts();
+  }
+}
+
+// Event listeners
+contactForm.addEventListener('submit', addOrEditContact);
+cancelBtn.addEventListener('click', cancelEdit);
+
+// Inicializa a lista de contatos
+displayContacts();
+
+  </script>
+</body>
+</html>
